@@ -1,0 +1,21 @@
+{
+  "name": "mythras-discord-special-effects",
+  "version": "0.1.0",
+  "description": "A Discord bot to help with Mythras' special effects",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node --env-file=.env dist/index.js",
+    "deploy-commands": "npm run build && node --env-file=.env deploy-commands.js",
+    "dev": "npm run deploy-commands && npm run start"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^14.22.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "@types/node": "^24.7.0"
+  }
+}
