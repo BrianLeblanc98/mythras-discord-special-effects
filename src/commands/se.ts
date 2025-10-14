@@ -13,8 +13,9 @@ import {
 import { crbSpecialEffects } from '../data/specialEffects/crb';
 import { specialEffect } from '../data/specialEffects';
 
+// TODO: Convert this to two option slash command, it lines up better with how se-info is used
 module.exports = {
-  data: new SlashCommandBuilder().setName('se').setDescription('Opens a modal to help with Mythras Special Effects'),
+  data: new SlashCommandBuilder().setName('se').setDescription('Opens a modal to '),
   async execute(interaction: MessageComponentInteraction) {
     const attackerCustomId = 'attackerLevelOfSuccess';
     const defenderCustomId = 'defenderLevelOfSuccess';
@@ -45,10 +46,10 @@ module.exports = {
     // Create a Label with a StringSelectMenu inside for the Attacker and Defender
     const attackerSelectMenuLabel = new LabelBuilder()
       .setLabel('Attacker\'s level of success')
-      .setStringSelectMenuComponent(new StringSelectMenuBuilder().setCustomId(attackerCustomId).addOptions(options));
+      .setStringSelectMenuComponent(selectMenu => selectMenu.setCustomId(attackerCustomId).addOptions(options));
     const defenderSelectMenuLabel = new LabelBuilder()
       .setLabel('Defender\'s level of success')
-      .setStringSelectMenuComponent(new StringSelectMenuBuilder().setCustomId(defenderCustomId).addOptions(options));
+      .setStringSelectMenuComponent(selectMenu => selectMenu.setCustomId(defenderCustomId).addOptions(options));
 
     // Add both Labels to the modal
     modal.addLabelComponents(attackerSelectMenuLabel, defenderSelectMenuLabel);
@@ -61,6 +62,7 @@ module.exports = {
         filter: i => i.customId === modalCustomId
       });
 
+      // LOS = Level Of Success
       const attackerLOS = parseInt(result.fields.getStringSelectValues(attackerCustomId)[0]);
       const defenderLOS = parseInt(result.fields.getStringSelectValues(defenderCustomId)[0]);
 
@@ -71,7 +73,7 @@ module.exports = {
       // If the levels of success are the same, or the Attacker and Defender both fail/fumble, no special effects are awarded
       if (attackerLOS === defenderLOS || (attackerLOS <= 2 && defenderLOS <= 2)) {
         // Finish creating the component for the final response
-        messageContainer = messageContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`${headingText}\nNo special effects awarded`))
+        messageContainer = messageContainer.addTextDisplayComponents(textDisplay => textDisplay.setContent(`${headingText}\nNo special effects awarded`))
       } else {
         // Otherwise, special effects are awarded
         const winner = attackerLOS > defenderLOS ? 'Attacker' : 'Defender';
@@ -93,14 +95,9 @@ module.exports = {
         const diff = attackerLOS - defenderLOS;
         const plural = Math.abs(diff) > 1 ? 's' : '';
         messageContainer = messageContainer
-          .addTextDisplayComponents(new TextDisplayBuilder()
-            .setContent(`${headingText}\n**${winner}** gets **${Math.abs(diff)}** special effect${plural}`)
-          )
+          .addTextDisplayComponents(textDisplay => textDisplay.setContent(`${headingText}\nThe **${winner}** gets **${Math.abs(diff)}** special effect${plural}`))
           .addSeparatorComponents(new SeparatorBuilder())
-          .addTextDisplayComponents(new TextDisplayBuilder()
-            .setContent(seText)
-          )
-
+          .addTextDisplayComponents(textDisplay => textDisplay.setContent(seText))
       }
 
       result.reply({

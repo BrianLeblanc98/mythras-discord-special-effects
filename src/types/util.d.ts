@@ -1,8 +1,9 @@
-import { Collection, Client, SlashCommandBuilder, RepliableInteraction } from "discord.js";
+import { Collection, Client, SlashCommandBuilder, RepliableInteraction, AutocompleteInteraction } from "discord.js";
 
 export type Command = {
   data: SlashCommandBuilder,
-  execute(interaction: RepliableInteraction): void
+  async execute(interaction: RepliableInteraction): void,
+  async autocomplete(interaction: AutocompleteInteraction): void
 }
 
 export type ClientWithCommands = Client & {
