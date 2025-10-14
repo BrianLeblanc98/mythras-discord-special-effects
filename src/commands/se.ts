@@ -1,28 +1,42 @@
 import {
   SlashCommandBuilder,
-  ModalBuilder,
-  LabelBuilder,
-  MessageComponentInteraction,
-  StringSelectMenuOptionBuilder,
-  StringSelectMenuBuilder,
   ContainerBuilder,
-  TextDisplayBuilder,
   MessageFlags,
-  SeparatorBuilder
+  SeparatorBuilder,
+  ChatInputCommandInteraction
 } from 'discord.js';
 import { crbSpecialEffects } from '../data/specialEffects/crb';
 import { specialEffect } from '../data/specialEffects';
 
-// TODO: Convert this to two option slash command, it lines up better with how se-info is used
 module.exports = {
-  data: new SlashCommandBuilder().setName('se').setDescription('Opens a modal to '),
-  async execute(interaction: MessageComponentInteraction) {
-    const attackerCustomId = 'attackerLevelOfSuccess';
-    const defenderCustomId = 'defenderLevelOfSuccess';
-
-    // Create the modal with a customId based on interaction id
-    const modalCustomId = `seModal_${interaction.id}`;
-
+  data: new SlashCommandBuilder()
+    .setName('se')
+    .setDescription('a')
+    .addIntegerOption(option =>
+      option
+        .setName('attacker-los')
+        .setDescription('The Attacker\'s Level of Success')
+        .setRequired(true)
+        .addChoices(
+          { name: 'Critical', value: 4 },
+          { name: 'Success', value: 3 },
+          { name: 'Failure', value: 2 },
+          { name: 'Fumble', value: 1 }
+        )
+    )
+    .addIntegerOption(option =>
+      option
+        .setName('defender-los')
+        .setDescription('The Defender\'s Level of Success')
+        .setRequired(true)
+        .addChoices(
+          { name: 'Critical', value: 4 },
+          { name: 'Success', value: 3 },
+          { name: 'Failure', value: 2 },
+          { name: 'Fumble', value: 1 }
+        )
+    ),
+  async execute(interaction: ChatInputCommandInteraction) {
     // Set up levels of success as numbers for easier comparisons
     const levelsOfSuccess = new Map<number, string>();
     levelsOfSuccess.set(4, 'Critical');
@@ -30,42 +44,11 @@ module.exports = {
     levelsOfSuccess.set(2, 'Failure');
     levelsOfSuccess.set(1, 'Fumble');
 
-    const modal = new ModalBuilder()
-      .setCustomId(modalCustomId)
-      .setTitle('Mythras Special Effects');
+    // LOS = Level Of Success
+    const attackerLOS = interaction.options.getInteger('attacker-los');
+    const defenderLOS = interaction.options.getInteger('defender-los');
 
-    // Create the level of success options
-    const options: StringSelectMenuOptionBuilder[] = [];
-    for (const level of levelsOfSuccess) {
-      const option = new StringSelectMenuOptionBuilder()
-        .setLabel(level[1])
-        .setValue(level[0].toString());
-      options.push(option);
-    }
-
-    // Create a Label with a StringSelectMenu inside for the Attacker and Defender
-    const attackerSelectMenuLabel = new LabelBuilder()
-      .setLabel('Attacker\'s level of success')
-      .setStringSelectMenuComponent(selectMenu => selectMenu.setCustomId(attackerCustomId).addOptions(options));
-    const defenderSelectMenuLabel = new LabelBuilder()
-      .setLabel('Defender\'s level of success')
-      .setStringSelectMenuComponent(selectMenu => selectMenu.setCustomId(defenderCustomId).addOptions(options));
-
-    // Add both Labels to the modal
-    modal.addLabelComponents(attackerSelectMenuLabel, defenderSelectMenuLabel);
-    await interaction.showModal(modal);
-
-    try {
-      // https://stackoverflow.com/questions/77286277/unknown-interaction-error-with-discord-js-v14-after-cancelling-and-retrying-a-mo
-      const result = await interaction.awaitModalSubmit({
-        time: 10_000,
-        filter: i => i.customId === modalCustomId
-      });
-
-      // LOS = Level Of Success
-      const attackerLOS = parseInt(result.fields.getStringSelectValues(attackerCustomId)[0]);
-      const defenderLOS = parseInt(result.fields.getStringSelectValues(defenderCustomId)[0]);
-
+    if (attackerLOS && defenderLOS) {
       // Start creating the container for the final response
       let messageContainer = new ContainerBuilder().setAccentColor(0xa82516)
       const headingText = `__**Attacker ${levelsOfSuccess.get(attackerLOS)} - Defender ${levelsOfSuccess.get(defenderLOS)}**__`
@@ -100,12 +83,13 @@ module.exports = {
           .addTextDisplayComponents(textDisplay => textDisplay.setContent(seText))
       }
 
-      result.reply({
+      interaction.reply({
         components: [messageContainer],
         flags: MessageFlags.IsComponentsV2
       });
-    } catch (err) {
-      console.log('se modal timeout');
+    } else {
+      // TODO: Send better reply than this
+      interaction.reply('se.js: Something went wrong')
     }
   }
 }
