@@ -4,29 +4,45 @@ import {
   LabelBuilder,
   MessageComponentInteraction,
   StringSelectMenuOptionBuilder,
-  StringSelectMenuBuilder
+  StringSelectMenuBuilder,
+  ContainerBuilder,
+  TextDisplayBuilder,
+  MessageFlags,
+  SeparatorBuilder
 } from 'discord.js';
+import { crbSpecialEffects } from '../data/specialEffects/crb';
+import { specialEffect } from '../data/specialEffects';
 
 module.exports = {
   data: new SlashCommandBuilder().setName('se').setDescription('Opens a modal to help with Mythras Special Effects'),
   async execute(interaction: MessageComponentInteraction) {
     const attackerCustomId = 'attackerLevelOfSuccess';
     const defenderCustomId = 'defenderLevelOfSuccess';
+
+    // Create the modal with a customId based on interaction id
     const modalCustomId = `seModal_${interaction.id}`;
-    const levelsOfSuccess = ['Critical', 'Success', 'Failure', 'Fumble'];
+
+    // Set up levels of success as numbers for easier comparisons
+    const levelsOfSuccess = new Map<number, string>();
+    levelsOfSuccess.set(4, 'Critical');
+    levelsOfSuccess.set(3, 'Success');
+    levelsOfSuccess.set(2, 'Failure');
+    levelsOfSuccess.set(1, 'Fumble');
 
     const modal = new ModalBuilder()
       .setCustomId(modalCustomId)
       .setTitle('Mythras Special Effects');
 
+    // Create the level of success options
     const options: StringSelectMenuOptionBuilder[] = [];
     for (const level of levelsOfSuccess) {
       const option = new StringSelectMenuOptionBuilder()
-        .setLabel(level)
-        .setValue(level);
+        .setLabel(level[1])
+        .setValue(level[0].toString());
       options.push(option);
     }
 
+    // Create a Label with a StringSelectMenu inside for the Attacker and Defender
     const attackerSelectMenuLabel = new LabelBuilder()
       .setLabel('Attacker\'s level of success')
       .setStringSelectMenuComponent(new StringSelectMenuBuilder().setCustomId(attackerCustomId).addOptions(options));
@@ -34,6 +50,7 @@ module.exports = {
       .setLabel('Defender\'s level of success')
       .setStringSelectMenuComponent(new StringSelectMenuBuilder().setCustomId(defenderCustomId).addOptions(options));
 
+    // Add both Labels to the modal
     modal.addLabelComponents(attackerSelectMenuLabel, defenderSelectMenuLabel);
     await interaction.showModal(modal);
 
@@ -44,48 +61,52 @@ module.exports = {
         filter: i => i.customId === modalCustomId
       });
 
-      const attackerLOS = result.fields.getStringSelectValues(attackerCustomId)[0];
-      const defenderLOS = result.fields.getStringSelectValues(defenderCustomId)[0];
+      const attackerLOS = parseInt(result.fields.getStringSelectValues(attackerCustomId)[0]);
+      const defenderLOS = parseInt(result.fields.getStringSelectValues(defenderCustomId)[0]);
 
-      const messageStart = `The attacker got a ${attackerLOS} and the defender got a ${defenderLOS}`;
-      if (attackerLOS === defenderLOS) {
-        result.reply(`The attacker and defender both got a ${attackerLOS}, no special effects awarded.`);
-      } else if (attackerLOS === 'Failure' && defenderLOS === 'Fumble' || attackerLOS === 'Fumble' && defenderLOS === 'Failure') {
-        result.reply(`${messageStart}, no special effects awarded.`)
-      } else if (attackerLOS === 'Critical') {
-        // TODO: Show relevant special effects
-        if (defenderLOS === 'Success') {
-          result.reply(`${messageStart}, the attacker gets 1 special effect`);
-        } else if (defenderLOS === 'Failure') {
-          result.reply(`${messageStart}, the attacker gets 2 special effects`);
-        } else if (defenderLOS === 'Fumble') {
-          result.reply(`${messageStart}, the attacker gets 3 special effects`);
-        }
-      } else if (defenderLOS === 'Critical') {
-        // TODO: Show relevant special effects
-        if (attackerLOS === 'Success') {
-          result.reply(`${messageStart}, the defender gets 1 special effect`);
-        } else if (attackerLOS === 'Failure') {
-          result.reply(`${messageStart}, the defender gets 2 special effects`);
-        } else if (attackerLOS === 'Fumble') {
-          // Could be just else?
-          result.reply(`${messageStart}, the defender gets 3 special effects`);
-        }
-      } else if (attackerLOS === 'Success') {
-        if (defenderLOS === 'Failure') {
-          result.reply(`${messageStart}, the attacker gets 1 special effect`)
-        } else if (defenderLOS === 'Fumble') {
-          result.reply(`${messageStart}, the attacker gets 2 special effects`);
-        }
-      } else if (defenderLOS === 'Success') {
-        if (attackerLOS === 'Failure') {
-          result.reply(`${messageStart}, the defender gets 1 special effect`)
-        } else if (attackerLOS === 'Fumble') {
-          result.reply(`${messageStart}, the defender gets 2 special effects`);
-        }
+      // Start creating the container for the final response
+      let messageContainer = new ContainerBuilder().setAccentColor(0xa82516)
+      const headingText = `__**Attacker ${levelsOfSuccess.get(attackerLOS)} - Defender ${levelsOfSuccess.get(defenderLOS)}**__`
+
+      // If the levels of success are the same, or the Attacker and Defender both fail/fumble, no special effects are awarded
+      if (attackerLOS === defenderLOS || (attackerLOS <= 2 && defenderLOS <= 2)) {
+        // Finish creating the component for the final response
+        messageContainer = messageContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`${headingText}\nNo special effects awarded`))
       } else {
-        result.reply('temp')
+        // Otherwise, special effects are awarded
+        const winner = attackerLOS > defenderLOS ? 'Attacker' : 'Defender';
+
+        // Create a filter to determine which special effects are available
+        const seFilter = winner === 'Attacker' ?
+          (se: specialEffect) => { // Attacker had the higher level of success
+            return se.attacker && !(se.critRequired && attackerLOS !== 4) && !(se.opponentFumbleRequired && defenderLOS !== 1)
+          } :
+          (se: specialEffect) => { // Defender had the higher level of success
+            return se.defender && !(se.critRequired && defenderLOS !== 4) && !(se.opponentFumbleRequired && attackerLOS !== 1);
+          };
+
+        // Finish creating the component for the final response
+        let seText = 'Special effects available:';
+        crbSpecialEffects.filter(seFilter).forEach(se => {
+          seText = seText.concat(`\n- *${se.name}*`);
+        });
+        const diff = attackerLOS - defenderLOS;
+        const plural = Math.abs(diff) > 1 ? 's' : '';
+        messageContainer = messageContainer
+          .addTextDisplayComponents(new TextDisplayBuilder()
+            .setContent(`${headingText}\n**${winner}** gets **${Math.abs(diff)}** special effect${plural}`)
+          )
+          .addSeparatorComponents(new SeparatorBuilder())
+          .addTextDisplayComponents(new TextDisplayBuilder()
+            .setContent(seText)
+          )
+
       }
+
+      result.reply({
+        components: [messageContainer],
+        flags: MessageFlags.IsComponentsV2
+      });
     } catch (err) {
       console.log('se modal timeout');
     }
