@@ -34,7 +34,7 @@ module.exports = {
         `*Weapon type: * `.concat(se.weaponType !== undefined ? `**${se.weaponType}**\n` : '**Any**\n') +
         `*Stackable:* ${yesno(se.stackable)}\n` +
         `*Critical only:* ${yesno(se.attacker)}\n` +
-        `*Opponent fumble only:* ${yesno(se.opponentFumbleRequired)}\n`
+        `*Opponent fumble only:* ${yesno(se.opponentFumbleRequired)}\n`;
 
       const messageContainer = new ContainerBuilder()
         .setAccentColor(0xa82516)

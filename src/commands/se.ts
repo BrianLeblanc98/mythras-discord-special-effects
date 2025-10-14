@@ -11,7 +11,7 @@ import { specialEffect } from '../data/specialEffects';
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('se')
-    .setDescription('a')
+    .setDescription('Replies with who received Special Effects, how many they received, and which Special Effects the can choose')
     .addIntegerOption(option =>
       option
         .setName('attacker-los')
