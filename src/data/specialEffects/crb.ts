@@ -1,4 +1,4 @@
-import { specialEffect } from '../specialEffects';
+import { specialEffect } from '../../types/specialEffects';
 
 export const crbSpecialEffects: specialEffect[] = [
   {
