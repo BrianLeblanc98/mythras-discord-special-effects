@@ -1,30 +1,11 @@
 import {
   AutocompleteInteraction,
   ChatInputCommandInteraction,
-  ContainerBuilder,
   MessageFlags,
   SlashCommandBuilder
 } from 'discord.js'
 import { crbSpecialEffects } from '../data/specialEffects/crb';
-import { specialEffect } from '../types/specialEffects';
-
-export function seInfoMessage(se: specialEffect): ContainerBuilder {
-  const yesno = (v: boolean) => v ? '**Yes**' : '**No**';
-  const infoText =
-    `*Usable when*\n- *Attacking:* ${yesno(se.attacker)}\n- *Defending:* ${yesno(se.defender)}\n` +
-    `*Weapon type: * `.concat(se.weaponType !== undefined ? `**${se.weaponType}**\n` : '**Any**\n') +
-    `*Stackable:* ${yesno(se.stackable)}\n` +
-    `*Critical only:* ${yesno(se.attacker)}\n` +
-    `*Opponent fumble only:* ${yesno(se.opponentFumbleRequired)}\n`;
-
-  return new ContainerBuilder()
-    .setAccentColor(0xa82516)
-    .addTextDisplayComponents(textDisplay => textDisplay.setContent(`## ${se.name} - ${se.source}##`))
-    .addSeparatorComponents(separator => separator)
-    .addTextDisplayComponents(textDisplay => textDisplay.setContent(`**__Description__**\n${se.description}`))
-    .addSeparatorComponents(separator => separator)
-    .addTextDisplayComponents(textDisplay => textDisplay.setContent(infoText));
-}
+import { seInfoMessageContainerBuilder } from '../util/functions';
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -41,18 +22,22 @@ module.exports = {
 		const focusedValue = interaction.options.getFocused();
     const seNames = crbSpecialEffects.map(se => se.name);
     const filtered = seNames.filter((choice) => choice.toLowerCase().startsWith(focusedValue.toLowerCase()));
-		await interaction.respond(filtered.map((choice) => ({ name: choice, value: choice })));
+    if (filtered.length <= 25) {
+      await interaction.respond(filtered.map((choice) => ({ name: choice, value: choice })));
+    } else {
+      await interaction.respond([]);
+    }
 	},
   async execute(interaction: ChatInputCommandInteraction) {
     const seOption = interaction.options.getString('special-effect');
-    const se = crbSpecialEffects.find(se => seOption?.toLowerCase() === se.name.toLowerCase())
+    const se = crbSpecialEffects.find(se => seOption?.toLowerCase() === se.name.toLowerCase());
     if (se) {
       interaction.reply({
-        components:[seInfoMessage(se)],
+        components:[seInfoMessageContainerBuilder(se)],
         flags: MessageFlags.IsComponentsV2
-      })
+      });
     } else {
-      interaction.reply('Special effect does not exist')
+      interaction.reply('Special effect does not exist');
     }
   }
 }

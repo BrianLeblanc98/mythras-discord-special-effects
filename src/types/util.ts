@@ -2,8 +2,8 @@ import { Collection, Client, SlashCommandBuilder, RepliableInteraction, Autocomp
 
 export type Command = {
   data: SlashCommandBuilder,
-  async execute(interaction: RepliableInteraction): void,
-  async autocomplete(interaction: AutocompleteInteraction): void
+  execute(interaction: RepliableInteraction): void,
+  autocomplete(interaction: AutocompleteInteraction): void
 }
 
 export type ClientWithCommands = Client & {

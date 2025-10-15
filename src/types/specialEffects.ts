@@ -1,3 +1,11 @@
+export type specialEffectWeaponType = 'Axe' | 'Bludgeoning' | 'Cutting' | 'Entangling' | 'Firearm' | 'Impaling' | 'Ranged' | 'Shield' | 'Siege' | 'Small' | 'Two Handed' | 'Unarmed';
+export enum LevelsOfSuccess {
+  Critical = 4,
+  Success = 3,
+  Failure = 2,
+  Fumble = 1,
+}
+
 export interface specialEffect {
   /** Name of the Special Effect */
   name: string;
@@ -15,6 +23,6 @@ export interface specialEffect {
   opponentFumbleRequired: boolean;
   /** True if the Special Effect is stackable */
   stackable: boolean;
-  /** Which type of weapon is required to use this Special Effect. Undefined if there's no weapon restriction */
-  weaponType?: 'Shield' | 'Bludgeoning' | 'Cutting' | 'Ranged' | 'Siege' | 'Firearm' | 'Entangling' | 'Impaling' | 'Small' | 'Two Handed' | 'Unarmed';
+  /** Which types of weapon is required to use this Special Effect. Undefined if there's no weapon restriction */
+  weaponTypes?: specialEffectWeaponType[];
 }
