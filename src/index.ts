@@ -1,7 +1,7 @@
-import { ClientWithCommands } from './types/util';
+import { Client, Collection, GatewayIntentBits } from 'discord.js';
 import fs from 'node:fs';
 import path from 'node:path';
-import { Client, Collection, GatewayIntentBits } from 'discord.js';
+import { ClientWithCommands } from './util';
 
 const token = process.env.DISCORD_TOKEN;
 

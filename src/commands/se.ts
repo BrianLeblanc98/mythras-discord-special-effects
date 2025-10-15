@@ -6,7 +6,7 @@ import {
   ChatInputCommandInteraction
 } from 'discord.js';
 import { crbSpecialEffects } from '../data/specialEffects/crb';
-import { LevelsOfSuccess, specialEffect } from '../types/specialEffects';
+import { LevelsOfSuccess, specialEffect } from '../util';
 
 
 module.exports = {

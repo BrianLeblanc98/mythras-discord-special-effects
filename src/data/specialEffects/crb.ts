@@ -1,4 +1,4 @@
-import { specialEffect } from '../../types/specialEffects';
+import { specialEffect } from '../../util';
 
 // Currently excluded: Weapon Malfunction
 export const crbSpecialEffects: specialEffect[] = [

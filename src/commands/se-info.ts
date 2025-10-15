@@ -5,7 +5,7 @@ import {
   SlashCommandBuilder
 } from 'discord.js'
 import { crbSpecialEffects } from '../data/specialEffects/crb';
-import { seInfoMessageContainerBuilder } from '../util/functions';
+import { seInfoMessageContainerBuilder } from '../util';
 
 module.exports = {
   data: new SlashCommandBuilder()

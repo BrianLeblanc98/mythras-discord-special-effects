@@ -8,15 +8,18 @@ import {
   SlashCommandBuilder,
   TextInputStyle
 } from 'discord.js';
-import { specialEffect, specialEffectWeaponType } from '../types/specialEffects';
-import { seInfoMessageContainerBuilder } from '../util/functions';
-import fs from 'node:fs';
-import { specialEffectWeaponTypeChoices } from '../data/weaponTypes';
+
+import {
+  specialEffect,
+  specialEffectWeaponType,
+  seInfoMessageContainerBuilder,
+  specialEffectWeaponTypeChoices
+} from '../util';
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('se-add')
-    .setDescription('Add a Special Effect')
+    .setDescription('[Non-functional] - Add a Special Effect.')
     .addBooleanOption(option =>
       option
         .setRequired(true)
@@ -139,35 +142,18 @@ module.exports = {
       }
 
       let weaponTypes: specialEffectWeaponType[] = [];
-      let weaponTypesString = '[';
+
       for (const wt of [weaponType, weaponType2, weaponType3] as specialEffectWeaponType[]) {
-        if (wt) {
-          weaponTypes.push(wt)
-          weaponTypesString = weaponTypesString.concat(`'${wt}', `)
-        }
+        if (wt) weaponTypes.push(wt);
       }
-      weaponTypesString = weaponTypesString.concat('$')
 
       if (weaponTypes.length > 0) newSe.weaponTypes = weaponTypes;
 
-      const temp = weaponTypes.length > 0 ? `,\n\t\tweaponTypes: ${weaponTypesString.replace(', $', ']')}` : '';
-      fs.appendFileSync('./temp.txt',
-`  {
-    name: '${name}',
-    description: '${description}',
-    source: 'CRB',
-    attacker: ${attacker},
-    defender: ${defender},
-    critRequired: ${critRequired},
-    opponentFumbleRequired: ${opponentFumbleRequired},
-    stackable: ${stackable}${temp}
-  },
-`
-      );
+      // TODO: Connect to a real database and send newSe to that with Guild ID
       result.reply({
         components:[seInfoMessageContainerBuilder(newSe)],
         flags: MessageFlags.IsComponentsV2
-      })
+      });
     } catch (err) {
       if (err instanceof DiscordjsError && err.code === DiscordjsErrorCodes.InteractionCollectorError) {
         // Ignore

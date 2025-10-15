@@ -1,5 +1,5 @@
-import type { ClientWithCommands } from '../types/util'
 import { Events } from 'discord.js';
+import type { ClientWithCommands } from '../util'
 
 module.exports = {
 	name: Events.ClientReady,

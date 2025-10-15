@@ -1,5 +1,5 @@
-import type { ClientWithCommands } from '../types/util'
 import { BaseInteraction, Events, MessageFlags } from 'discord.js';
+import type { ClientWithCommands } from '../util'
 
 module.exports = {
 	name: Events.InteractionCreate,
