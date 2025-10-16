@@ -144,7 +144,7 @@ export const crbSpecialEffects: specialEffect[] = [
     critRequired: false,
     opponentFumbleRequired: false,
     stackable: false,
-		weaponTypes: ['Siege', 'Ranged']
+		weaponTypes: ['Siege', 'Firearm']
   },
   {
     name: 'Duck Back',
