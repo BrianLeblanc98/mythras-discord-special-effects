@@ -1,6 +1,6 @@
 import { specialEffect } from '../../util';
 
-// Currently excluded: Weapon Malfunction
+/** All special effects from the Mythras Core Rule Book. Currently excluding Weapon Malfunction*/
 export const crbSpecialEffects: specialEffect[] = [
   {
     name: 'Accidental Injury',

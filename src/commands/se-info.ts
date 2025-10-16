@@ -22,6 +22,8 @@ module.exports = {
 		const focusedValue = interaction.options.getFocused();
     const seNames = crbSpecialEffects.map(se => se.name);
     const filtered = seNames.filter((choice) => choice.toLowerCase().startsWith(focusedValue.toLowerCase()));
+
+    // Show nothing until under the maximum, always happens after 1 character
     if (filtered.length <= 25) {
       await interaction.respond(filtered.map((choice) => ({ name: choice, value: choice })));
     } else {
@@ -31,6 +33,7 @@ module.exports = {
   async execute(interaction: ChatInputCommandInteraction) {
     const seOption = interaction.options.getString('special-effect');
     const se = crbSpecialEffects.find(se => seOption?.toLowerCase() === se.name.toLowerCase());
+
     if (se) {
       interaction.reply({
         components:[seInfoMessageContainerBuilder(se)],

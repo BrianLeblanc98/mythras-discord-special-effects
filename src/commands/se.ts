@@ -38,14 +38,14 @@ module.exports = {
         )
     ),
   async execute(interaction: ChatInputCommandInteraction) {
-    // Set up levels of success as numbers for easier comparisons
+    // LOS = Level Of Success
+    // Create a map for easier access to String versions of the LOS'
     const los = new Map<number, string>();
     los.set(LevelsOfSuccess.Critical, 'Critical');
     los.set(LevelsOfSuccess.Success, 'Success');
     los.set(LevelsOfSuccess.Failure, 'Failure');
     los.set(LevelsOfSuccess.Fumble, 'Fumble');
 
-    // LOS = Level Of Success
     const attackerLOS = interaction.options.getInteger('attacker-los', true);
     const defenderLOS = interaction.options.getInteger('defender-los', true);
 
@@ -71,12 +71,12 @@ module.exports = {
         };
 
       // Finish creating the component for the final response
+      const diff = attackerLOS - defenderLOS;
+      const plural = Math.abs(diff) > 1 ? 's' : '';
       let seText = 'Special effects available:';
       crbSpecialEffects.filter(seFilter).forEach(se => {
         seText = seText.concat(`\n- *${se.name}${se.weaponTypes ? ` - (${se.weaponTypes.toString().replace(',', ', ')} weapons)` : ''}*`);
       });
-      const diff = attackerLOS - defenderLOS;
-      const plural = Math.abs(diff) > 1 ? 's' : '';
       messageContainer = messageContainer
         .addTextDisplayComponents(textDisplay => textDisplay.setContent(`${headingText}\nThe **${winner}** gets **${Math.abs(diff)}** special effect${plural}`))
         .addSeparatorComponents(new SeparatorBuilder())

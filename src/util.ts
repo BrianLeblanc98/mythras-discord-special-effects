@@ -50,6 +50,7 @@ export interface specialEffect {
   weaponTypes?: specialEffectWeaponType[];
 }
 
+/** Create the info message for se-info, can be useful outside that command */
 export function seInfoMessageContainerBuilder(se: specialEffect): ContainerBuilder {
   const yesno = (v: boolean) => v ? '**Yes**' : '**No**';
   const infoText =
