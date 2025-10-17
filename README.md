@@ -1,5 +1,7 @@
 # mythras-discord-special-effects
 
+A Discord bot to help with Mythras' special effects
+
 ## Setup
 ### Step 1
 ```
