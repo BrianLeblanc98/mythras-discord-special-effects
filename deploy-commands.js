@@ -41,18 +41,17 @@ const rest = new REST().setToken(token);
 	try {
 		console.log(`deploy-commands.js: Started refreshing ${commands.length} application (/) commands.`);
 
-		// await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: [] });
-		// console.log('deploy-commands.js: Successfully removed old commands');
-
 		// The put method is used to fully refresh all commands in the guild with the current set
 		let data;
 		if (process.env.GUILD_ID) {
 			// Dev mode
 			console.log ('deploy-commands.js: DEVELOPMENT');
+			// await rest.put(Routes.applicationGuildCommands(clientId, process.env.GUILD_ID), { body: [] });
 			data = await rest.put(Routes.applicationGuildCommands(clientId, process.env.GUILD_ID), { body: commands });
 		} else {
 			// Prod mode
-			console.log('deploy-commands.js: PRODUCTION')
+			console.log('deploy-commands.js: PRODUCTION');
+			// await rest.put(Routes.applicationCommands(clientId), { body: [] });
 			data = await rest.put(Routes.applicationCommands(clientId), { body: commands });
 		}
 
