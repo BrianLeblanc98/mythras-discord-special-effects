@@ -7,9 +7,12 @@
     "build": "tsc",
     "clean": "rimraf dist",
     "lint": "npx eslint .",
-    "start": "node --env-file=.env dist/index.js",
-    "deploy-commands": "npm run build && node --env-file=.env deploy-commands.js",
-    "dev": "npm run clean && npm run deploy-commands && npm run start"
+    "start:dev": "node --env-file=.env.dev dist/index.js",
+    "start:prod": "node --env-file=.env dist/index.js",
+    "deploy-commands:dev": "npm run build && node --env-file=.env.dev deploy-commands.js",
+    "deploy-commands:prod": "npm run build && node --env-file=.env deploy-commands.js",
+    "dev": "npm run clean && npm run deploy-commands:dev && npm run start:dev",
+    "prod": "npm run clean && npm run deploy-commands:prod && npm run start:prod"
   },
   "author": "",
   "license": "ISC",

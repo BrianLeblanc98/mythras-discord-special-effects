@@ -1,7 +1,6 @@
 const { REST, Routes } = require('discord.js');
 const token = process.env.DISCORD_TOKEN;
 const clientId = process.env.CLIENT_ID;
-const guildId = process.env.GUILD_ID;
 const fs = require('node:fs');
 const path = require('node:path');
 
@@ -46,7 +45,16 @@ const rest = new REST().setToken(token);
 		// console.log('deploy-commands.js: Successfully removed old commands');
 
 		// The put method is used to fully refresh all commands in the guild with the current set
-		const data = await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands });
+		let data;
+		if (process.env.GUILD_ID) {
+			// Dev mode
+			console.log ('deploy-commands.js: DEVELOPMENT');
+			data = await rest.put(Routes.applicationGuildCommands(clientId, process.env.GUILD_ID), { body: commands });
+		} else {
+			// Prod mode
+			console.log('deploy-commands.js: PRODUCTION')
+			data = await rest.put(Routes.applicationCommands(clientId), { body: commands });
+		}
 
 		console.log(`deploy-commands.js: Successfully reloaded ${data.length} application (/) commands.`);
 	} catch (error) {
