@@ -12,6 +12,7 @@
     "start:prod": "node --env-file=.env dist/index.js",
     "deploy-commands:dev": "npm run build && node --env-file=.env.dev deploy-commands.js",
     "deploy-commands:prod": "npm run build && node --env-file=.env deploy-commands.js",
+    "clear-commands": "node --env-file=.env.dev clear-commands.js",
     "dev": "npm run clean && npm run deploy-commands:dev && npm run start:dev",
     "prod": "npm run clean && npm run deploy-commands:prod && npm run start:prod"
   },

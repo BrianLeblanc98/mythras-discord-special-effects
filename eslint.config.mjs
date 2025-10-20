@@ -7,5 +7,5 @@ import tseslint from 'typescript-eslint';
 export default defineConfig(
   eslint.configs.recommended,
   tseslint.configs.recommended,
-  globalIgnores(['dist/', 'deploy-commands.js'])
+  globalIgnores(['dist/', 'deploy-commands.js', 'clear-commands.js'])
 );
