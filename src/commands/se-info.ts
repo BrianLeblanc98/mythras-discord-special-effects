@@ -1,6 +1,8 @@
 import {
+  AttachmentBuilder,
   AutocompleteInteraction,
   ChatInputCommandInteraction,
+  EmbedBuilder,
   MessageFlags,
   SlashCommandBuilder
 } from 'discord.js'
@@ -35,10 +37,20 @@ module.exports = {
     const se = crbSpecialEffects.find(se => seOption?.toLowerCase() === se.name.toLowerCase());
 
     if (se) {
-      interaction.reply({
+      await interaction.reply({
         components:[seInfoMessageContainerBuilder(se)],
         flags: MessageFlags.IsComponentsV2
       });
+
+      // Follow up with the Impale Effects Table when needed
+      if (se.name === 'Impale') {
+        const file = new AttachmentBuilder('./assets/impale-table.png');
+        const embed = new EmbedBuilder().setTitle('Impale Effects Table').setImage('attachment://impale-table.png');
+        interaction.followUp({
+          embeds: [embed],
+          files: [file]
+        });
+      }
     } else {
       interaction.reply('Special effect does not exist');
     }

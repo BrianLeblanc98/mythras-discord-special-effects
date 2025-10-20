@@ -2,6 +2,8 @@
 
 A Discord bot to help with Mythras' special effects
 
+[Install this bot](https://discord.com/oauth2/authorize?client_id=1427154107910721658)
+
 ## Setup
 ### Step 1
 ```
