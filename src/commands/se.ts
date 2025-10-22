@@ -50,13 +50,13 @@ module.exports = {
     const defenderLOS = interaction.options.getInteger('defender-los', true);
 
     // Start creating the container for the final response
-    let messageContainer = new ContainerBuilder().setAccentColor(0xa82516)
-    const headingText = `__**Attacker ${los.get(attackerLOS)} - Defender ${los.get(defenderLOS)}**__`
+    let messageContainer = new ContainerBuilder().setAccentColor(0xa82516);
+    const headingText = `__**Attacker ${los.get(attackerLOS)} - Defender ${los.get(defenderLOS)}**__`;
 
     // If the levels of success are the same, or the Attacker and Defender both fail/fumble, no special effects are awarded
     if (attackerLOS === defenderLOS || (attackerLOS <= LevelsOfSuccess.Failure && defenderLOS <= LevelsOfSuccess.Failure)) {
       // Finish creating the component for the final response
-      messageContainer = messageContainer.addTextDisplayComponents(textDisplay => textDisplay.setContent(`${headingText}\nNo special effects awarded`))
+      messageContainer = messageContainer.addTextDisplayComponents(textDisplay => textDisplay.setContent(`${headingText}\nNo special effects awarded`));
     } else {
       // Otherwise, special effects are awarded
       const winner = attackerLOS > defenderLOS ? 'Attacker' : 'Defender';
@@ -64,7 +64,7 @@ module.exports = {
       // Create a filter to determine which special effects are available
       const seFilter = winner === 'Attacker' ?
         (se: specialEffect) => { // Attacker had the higher level of success
-          return se.attacker && !(se.critRequired && attackerLOS !== LevelsOfSuccess.Critical) && !(se.opponentFumbleRequired && defenderLOS !== LevelsOfSuccess.Fumble)
+          return se.attacker && !(se.critRequired && attackerLOS !== LevelsOfSuccess.Critical) && !(se.opponentFumbleRequired && defenderLOS !== LevelsOfSuccess.Fumble);
         } :
         (se: specialEffect) => { // Defender had the higher level of success
           return se.defender && !(se.critRequired && defenderLOS !== LevelsOfSuccess.Critical) && !(se.opponentFumbleRequired && attackerLOS !== LevelsOfSuccess.Fumble);
@@ -80,7 +80,7 @@ module.exports = {
       messageContainer = messageContainer
         .addTextDisplayComponents(textDisplay => textDisplay.setContent(`${headingText}\nThe **${winner}** gets **${Math.abs(diff)}** special effect${plural}`))
         .addSeparatorComponents(new SeparatorBuilder())
-        .addTextDisplayComponents(textDisplay => textDisplay.setContent(seText))
+        .addTextDisplayComponents(textDisplay => textDisplay.setContent(seText));
     }
 
     interaction.reply({
@@ -88,4 +88,4 @@ module.exports = {
       flags: MessageFlags.IsComponentsV2
     });
   }
-}
+};

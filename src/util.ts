@@ -12,15 +12,15 @@ export type Command = {
   data: SlashCommandBuilder,
   execute(interaction: RepliableInteraction): void,
   autocomplete(interaction: AutocompleteInteraction): void
-}
+};
 
 export type ClientWithCommands = Client & {
   commands?: Collection<string, Command>,
-}
+};
 
 const specialEffectWeaponTypes = ['Axe', 'Bludgeoning', 'Cutting', 'Entangling', 'Firearm', 'Impaling', 'Ranged', 'Shield', 'Siege', 'Small', 'Two Handed', 'Unarmed'] as const;
 export type specialEffectWeaponType = typeof specialEffectWeaponTypes[number];
-export const specialEffectWeaponTypeChoices: APIApplicationCommandOptionChoice<string>[] = specialEffectWeaponTypes.map(wt => ({ name: wt, value: wt}))
+export const specialEffectWeaponTypeChoices: APIApplicationCommandOptionChoice<string>[] = specialEffectWeaponTypes.map(wt => ({ name: wt, value: wt}));
 
 export enum LevelsOfSuccess {
   Critical = 4,

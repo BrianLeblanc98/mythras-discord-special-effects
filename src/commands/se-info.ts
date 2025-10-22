@@ -5,7 +5,7 @@ import {
   EmbedBuilder,
   MessageFlags,
   SlashCommandBuilder
-} from 'discord.js'
+} from 'discord.js';
 import { crbSpecialEffects } from '../data/specialEffects/crb';
 import { seInfoMessageContainerBuilder } from '../util';
 
@@ -45,6 +45,8 @@ module.exports = {
       // Follow up with the Impale Effects Table when needed
       if (se.name === 'Impale') {
         const file = new AttachmentBuilder('./assets/impale-table.png');
+
+        // TODO: Host image online rather than locally
         const embed = new EmbedBuilder().setTitle('Impale Effects Table').setImage('attachment://impale-table.png');
         interaction.followUp({
           embeds: [embed],
@@ -55,4 +57,4 @@ module.exports = {
       interaction.reply('Special effect does not exist');
     }
   }
-}
+};

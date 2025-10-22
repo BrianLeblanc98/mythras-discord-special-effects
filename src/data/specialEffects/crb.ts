@@ -450,4 +450,4 @@ export const crbSpecialEffects: specialEffect[] = [
     opponentFumbleRequired: false,
     stackable: false
   },
-]
+];

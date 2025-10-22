@@ -19,8 +19,8 @@ const pushCommand = (filePath: string) => {
 		} else {
 			console.log(`index.js: [WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
 		}
-	})
-}
+	});
+};
 
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
@@ -50,7 +50,7 @@ for (const file of eventFiles) {
 		} else {
 			client.on(event.name, (...args) => event.execute(...args));
 		}
-	})
+	});
 }
 
 client.login(token);
