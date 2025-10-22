@@ -8,6 +8,14 @@ import {
   SlashCommandBuilder
 } from 'discord.js';
 
+export const ACCENT_COLOR: number = 0xa82516;
+export enum LevelsOfSuccess {
+  Critical = 4,
+  Success = 3,
+  Failure = 2,
+  Fumble = 1,
+}
+
 export type Command = {
   data: SlashCommandBuilder,
   execute(interaction: RepliableInteraction): void,
@@ -18,16 +26,10 @@ export type ClientWithCommands = Client & {
   commands?: Collection<string, Command>,
 };
 
+// Done this way for adding special effects
 const specialEffectWeaponTypes = ['Axe', 'Bludgeoning', 'Cutting', 'Entangling', 'Firearm', 'Impaling', 'Ranged', 'Shield', 'Siege', 'Small', 'Two Handed', 'Unarmed'] as const;
 export type specialEffectWeaponType = typeof specialEffectWeaponTypes[number];
 export const specialEffectWeaponTypeChoices: APIApplicationCommandOptionChoice<string>[] = specialEffectWeaponTypes.map(wt => ({ name: wt, value: wt}));
-
-export enum LevelsOfSuccess {
-  Critical = 4,
-  Success = 3,
-  Failure = 2,
-  Fumble = 1,
-}
 
 export interface specialEffect {
   /** Name of the Special Effect */
@@ -50,7 +52,7 @@ export interface specialEffect {
   weaponTypes?: specialEffectWeaponType[];
 }
 
-/** Create the info message for se-info, can be useful outside that command */
+/** Create the info message for se-info, can be useful outside just /se-info */
 export function seInfoMessageContainerBuilder(se: specialEffect): ContainerBuilder {
   const yesno = (v: boolean) => v ? '**Yes**' : '**No**';
   const infoText =
@@ -61,7 +63,7 @@ export function seInfoMessageContainerBuilder(se: specialEffect): ContainerBuild
     `*Opponent fumble only:* ${yesno(se.opponentFumbleRequired)}\n`;
 
   return new ContainerBuilder()
-    .setAccentColor(0xa82516)
+    .setAccentColor(ACCENT_COLOR)
     .addTextDisplayComponents(textDisplay => textDisplay.setContent(`## ${se.name} - ${se.source}##`))
     .addSeparatorComponents(separator => separator)
     .addTextDisplayComponents(textDisplay => textDisplay.setContent(`**__Description__**\n${se.description}`))

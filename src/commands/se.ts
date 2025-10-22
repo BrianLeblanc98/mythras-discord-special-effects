@@ -6,7 +6,7 @@ import {
   ChatInputCommandInteraction
 } from 'discord.js';
 import { crbSpecialEffects } from '../data/specialEffects/crb';
-import { LevelsOfSuccess, specialEffect } from '../util';
+import { ACCENT_COLOR, LevelsOfSuccess, specialEffect } from '../util';
 
 
 module.exports = {
@@ -31,11 +31,18 @@ module.exports = {
         .setDescription('The Defender\'s Level of Success')
         .setRequired(true)
         .addChoices(
-          { name: 'Critical', value: 4 },
-          { name: 'Success', value: 3 },
-          { name: 'Failure', value: 2 },
-          { name: 'Fumble', value: 1 }
+          { name: 'Critical', value: LevelsOfSuccess.Critical },
+          { name: 'Success', value: LevelsOfSuccess.Success },
+          { name: 'Failure', value: LevelsOfSuccess.Failure },
+          { name: 'Fumble', value: LevelsOfSuccess.Fumble }
         )
+    )
+    .addStringOption(option =>
+      option
+        .setName('show-all')
+        .setDescription('Make the response visible to the whole channel instead of only you')
+        .setRequired(false)
+        .addChoices({ name: 'True', value: 'True' })
     ),
   async execute(interaction: ChatInputCommandInteraction) {
     // LOS = Level Of Success
@@ -50,15 +57,14 @@ module.exports = {
     const defenderLOS = interaction.options.getInteger('defender-los', true);
 
     // Start creating the container for the final response
-    let messageContainer = new ContainerBuilder().setAccentColor(0xa82516);
+    let messageContainer = new ContainerBuilder().setAccentColor(ACCENT_COLOR);
     const headingText = `__**Attacker ${los.get(attackerLOS)} - Defender ${los.get(defenderLOS)}**__`;
 
     // If the levels of success are the same, or the Attacker and Defender both fail/fumble, no special effects are awarded
     if (attackerLOS === defenderLOS || (attackerLOS <= LevelsOfSuccess.Failure && defenderLOS <= LevelsOfSuccess.Failure)) {
       // Finish creating the component for the final response
       messageContainer = messageContainer.addTextDisplayComponents(textDisplay => textDisplay.setContent(`${headingText}\nNo special effects awarded`));
-    } else {
-      // Otherwise, special effects are awarded
+    } else { // Otherwise, special effects are awarded
       const winner = attackerLOS > defenderLOS ? 'Attacker' : 'Defender';
 
       // Create a filter to determine which special effects are available
@@ -85,7 +91,7 @@ module.exports = {
 
     interaction.reply({
       components: [messageContainer],
-      flags: MessageFlags.IsComponentsV2
+      flags: MessageFlags.IsComponentsV2 | (interaction.options.getString('show-all') ? 0 : MessageFlags.Ephemeral)
     });
   }
 };
