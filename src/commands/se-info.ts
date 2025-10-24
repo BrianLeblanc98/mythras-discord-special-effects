@@ -7,7 +7,7 @@ import {
   SlashCommandBuilder
 } from 'discord.js';
 import { crbSpecialEffects } from '../data/specialEffects/crb';
-import { seInfoMessageContainerBuilder } from '../util';
+import { seInfoContainerBuilder } from '../commandFunctions/se-info';
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -32,7 +32,7 @@ module.exports = {
     const seNames = crbSpecialEffects.map(se => se.name);
     const filtered = seNames.filter((choice) => choice.toLowerCase().startsWith(focusedValue.toLowerCase()));
 
-    // Show nothing until under the maximum, always happens after 1 character
+    // 25 items is the maximum as per Discord API, show nothing until under the maximum, always happens after 1 character is typed
     if (filtered.length <= 25) {
       await interaction.respond(filtered.map((choice) => ({ name: choice, value: choice })));
     } else {
@@ -45,16 +45,17 @@ module.exports = {
 
     if (se) {
       await interaction.reply({
-        components:[seInfoMessageContainerBuilder(se)],
+        components:[seInfoContainerBuilder(se)],
         flags: MessageFlags.IsComponentsV2 | (interaction.options.getString('show-all') ? 0 : MessageFlags.Ephemeral)
       });
 
       if (se.name === 'Impale') {
         // Follow up with the Impale Effects Table
-        const file = new AttachmentBuilder('./assets/impale-table.png');
 
         // TODO: Host image online rather than locally
+        const file = new AttachmentBuilder('./assets/impale-table.png');
         const embed = new EmbedBuilder().setTitle('Impale Effects Table').setImage('attachment://impale-table.png');
+
         interaction.followUp({
           embeds: [embed],
           files: [file],
