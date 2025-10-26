@@ -2,9 +2,21 @@ import { ContainerBuilder, SeparatorBuilder } from 'discord.js';
 import { ACCENT_COLOR, LevelsOfSuccess, specialEffect } from '../util';
 import { crbSpecialEffects } from '../data/specialEffects/crb';
 
-// TODO: Write tests for this function
-export function getFilteredSpecialEffects(attackerLOS: number, defenderLOS: number, specialEffects: specialEffect[]): specialEffect[] {
+function getWinner(attackerLOS: LevelsOfSuccess, defenderLOS: LevelsOfSuccess): 'Attacker' | 'Defender' | 'Neither' {
+  if (attackerLOS === defenderLOS || (attackerLOS <= LevelsOfSuccess.Failure && defenderLOS <= LevelsOfSuccess.Failure)) {
+    return 'Neither';
+  } else {
+    return attackerLOS > defenderLOS ? 'Attacker' : 'Defender';
+  }
+}
+
+export function getFilteredSpecialEffects(attackerLOS: LevelsOfSuccess, defenderLOS: LevelsOfSuccess, specialEffects: specialEffect[]): specialEffect[] {
   // Create a filter to determine which special effects are available
+
+  if (getWinner(attackerLOS, defenderLOS) === 'Neither') {
+    return [];
+  }
+
   const filter = attackerLOS > defenderLOS ?
     (se: specialEffect) => { // Attacker had the higher level of success
       return se.attacker &&
@@ -20,9 +32,9 @@ export function getFilteredSpecialEffects(attackerLOS: number, defenderLOS: numb
   return specialEffects.filter(filter);
 }
 
-export function seContainerBuilder(attackerLOS: number, defenderLOS: number): ContainerBuilder {
+export function seContainerBuilder(attackerLOS: LevelsOfSuccess, defenderLOS: LevelsOfSuccess): ContainerBuilder {
   // Create a map for easier access to String versions of the LOS'
-  const los = new Map<number, string>();
+  const los = new Map<LevelsOfSuccess, string>();
   los.set(LevelsOfSuccess.Critical, 'Critical');
   los.set(LevelsOfSuccess.Success, 'Success');
   los.set(LevelsOfSuccess.Failure, 'Failure');
@@ -32,14 +44,12 @@ export function seContainerBuilder(attackerLOS: number, defenderLOS: number): Co
   let seContainerBuilder = new ContainerBuilder().setAccentColor(ACCENT_COLOR);
   const headingText = `__**Attacker ${los.get(attackerLOS)} - Defender ${los.get(defenderLOS)}**__`;
 
+  const winner = getWinner(attackerLOS, defenderLOS);
   // If the levels of success are the same, or the Attacker and Defender both fail/fumble, no special effects are awarded
-  if (attackerLOS === defenderLOS || (attackerLOS <= LevelsOfSuccess.Failure && defenderLOS <= LevelsOfSuccess.Failure)) {
-    // Finish creating the component for the final response
+  if (winner === 'Neither') {
     seContainerBuilder = seContainerBuilder.addTextDisplayComponents(textDisplay => textDisplay.setContent(`${headingText}\nNo special effects awarded`));
-  } else { // Otherwise, special effects are awarded
-    const winner = attackerLOS > defenderLOS ? 'Attacker' : 'Defender';
-
-    // Finish creating the component for the final response
+  } else {
+    // Otherwise, special effects are awarded
     let seList = 'Special effects available:';
     getFilteredSpecialEffects(attackerLOS, defenderLOS, crbSpecialEffects).forEach(se => {
       seList = seList.concat(
@@ -47,6 +57,7 @@ export function seContainerBuilder(attackerLOS: number, defenderLOS: number): Co
       );
     });
 
+    // Finish creating the component for the final response
     const diff = attackerLOS - defenderLOS;
     const plural = Math.abs(diff) > 1 ? 's' : '';
 

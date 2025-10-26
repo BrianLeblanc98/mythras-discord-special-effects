@@ -30,6 +30,7 @@ const specialEffectWeaponTypes = ['Axe', 'Bludgeoning', 'Cutting', 'Entangling',
 export type specialEffectWeaponType = typeof specialEffectWeaponTypes[number];
 export const specialEffectWeaponTypeChoices: APIApplicationCommandOptionChoice<string>[] = specialEffectWeaponTypes.map(wt => ({ name: wt, value: wt}));
 
+// TODO: Consider adding optional property imageURL? for effects that have additional tables/etc. like Impale
 export interface specialEffect {
   /** Name of the Special Effect */
   name: string;

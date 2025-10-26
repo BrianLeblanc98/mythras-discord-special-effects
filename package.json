@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "copy-env": "copyfiles .env.template .env && copyfiles .env.dev.template .env.dev",
+    "test": "node --import tsx --test",
     "build": "tsc",
     "clean": "rimraf dist",
     "lint": "eslint .",
@@ -29,6 +30,7 @@
     "eslint": "^9.37.0",
     "native-copyfiles": "^1.3.6",
     "rimraf": "^6.0.1",
+    "tsx": "^4.20.6",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.1"
   }
