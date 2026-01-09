@@ -1,0 +1,39 @@
+{
+  "name": "mythras-discord-special-effects",
+  "version": "1.0.0b",
+  "description": "A Discord bot to help with Mythras' special effects",
+  "main": "index.js",
+  "scripts": {
+    "copy-env": "copyfiles .env.template .env && copyfiles .env.dev.template .env.dev",
+    "test": "node --import tsx --test",
+    "build": "tsc",
+    "clean": "rimraf dist",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "start:dev": "node --env-file=.env.dev dist/index.js",
+    "start:prod": "node --env-file=.env dist/index.js",
+    "deploy-commands:dev": "npm run build && node --env-file=.env.dev deploy-commands.js",
+    "deploy-commands:prod": "npm run build && node --env-file=.env deploy-commands.js",
+    "clear-commands": "node --env-file=.env.dev clear-commands.js",
+    "dev": "npm run clean && npm run deploy-commands:dev && npm run start:dev",
+    "prod": "npm run clean && npm run deploy-commands:prod && npm run start:prod"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^14.22.1",
+    "sequelize": "^6.37.7",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.37.0",
+    "@stylistic/eslint-plugin": "^5.5.0",
+    "@types/node": "^24.7.0",
+    "eslint": "^9.37.0",
+    "native-copyfiles": "^1.3.6",
+    "rimraf": "^6.0.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.1"
+  }
+}
